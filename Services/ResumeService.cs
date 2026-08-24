@@ -6,40 +6,51 @@ namespace ResumeScreening.Services
     public class ResumeService : IResumeService
     {
         private readonly IEnumerable<IResumeParser> _parsers;
-        private readonly IAIService _aiService;
+        private readonly IResumeMatcher _resumeMatcher;
 
         public ResumeService(
             IEnumerable<IResumeParser> parsers,
-            IAIService aiService)
+            IResumeMatcher resumeMatcher)
         {
             _parsers = parsers;
-            _aiService = aiService;
+            _resumeMatcher = resumeMatcher;
         }
 
-        public async Task<List<ResumeAnalysisResult>> AnalyzeResumesAsync(
-            string jobDescription,
-            string folderPath)
+        public async Task<List<ResumeAnalysisResult>> Analyze(
+            AnalyzeResumeRequest request)
         {
-            if (string.IsNullOrWhiteSpace(jobDescription))
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (string.IsNullOrWhiteSpace(request.JobDescription))
             {
                 throw new ArgumentException(
                     "Job description is required.");
             }
 
-            if (string.IsNullOrWhiteSpace(folderPath))
+            if (string.IsNullOrWhiteSpace(request.ResumeFolderPath))
             {
                 throw new ArgumentException(
                     "Resume folder path is required.");
             }
 
-            if (!Directory.Exists(folderPath))
+            if (request.ShortlistThreshold < 0 ||
+                request.ShortlistThreshold > 100)
+            {
+                throw new ArgumentException(
+                    "Shortlist threshold must be between 0 and 100.");
+            }
+
+            if (!Directory.Exists(request.ResumeFolderPath))
             {
                 throw new DirectoryNotFoundException(
-                    $"Resume folder does not exist: {folderPath}");
+                    $"Resume folder does not exist: {request.ResumeFolderPath}");
             }
 
             var files = Directory.GetFiles(
-                folderPath,
+                request.ResumeFolderPath,
                 "*.*",
                 SearchOption.TopDirectoryOnly);
 
@@ -80,8 +91,8 @@ namespace ResumeScreening.Services
 
                     // Step 2: Compare resume with job description
                     var analysis =
-                        await _aiService.AnalyzeResumeAsync(
-                            jobDescription,
+                         _resumeMatcher.Analyze(
+                            request.JobDescription,
                             resumeText);
 
                     // Step 3: Build final result
@@ -105,7 +116,8 @@ namespace ResumeScreening.Services
 
                     // Step 4: Decide shortlist status
                     result.Status =
-                        analysis.MatchScore >= 70
+                        analysis.MatchScore >=
+                        request.ShortlistThreshold
                             ? "Shortlisted"
                             : "Not Shortlisted";
                 }

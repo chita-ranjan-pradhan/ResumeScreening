@@ -22,9 +22,7 @@ namespace ResumeScreening.Controllers
             try
             {
                 var results =
-                    await _resumeService.AnalyzeResumesAsync(
-                        request.JobDescription,
-                        request.ResumeFolderPath);
+                    await _resumeService.Analyze(request);
 
                 return Ok(new
                 {

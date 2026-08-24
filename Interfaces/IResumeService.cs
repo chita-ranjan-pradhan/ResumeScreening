@@ -4,8 +4,7 @@ namespace ResumeScreening.Interfaces
 {
     public interface IResumeService
     {
-        Task<List<ResumeAnalysisResult>> AnalyzeResumesAsync(
-            string jobDescription,
-            string folderPath);
+        Task<List<ResumeAnalysisResult>> Analyze(
+            AnalyzeResumeRequest request);
     }
 }

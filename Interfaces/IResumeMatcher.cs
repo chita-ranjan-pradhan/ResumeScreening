@@ -2,9 +2,9 @@
 
 namespace ResumeScreening.Interfaces
 {
-    public interface IAIService
+    public interface IResumeMatcher
     {
-        Task<AIResumeAnalysisResult> AnalyzeResumeAsync(
+        ResumeAnalysisResult Analyze(
             string jobDescription,
             string resumeText);
     }
