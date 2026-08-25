@@ -11,7 +11,7 @@ builder.Services.AddScoped<IResumeService, ResumeService>();
 builder.Services.AddScoped<IResumeParser, PdfResumeParser>();
 builder.Services.AddScoped<IResumeParser, DocxResumeParser>();
 //builder.Services.AddScoped<IResumeMatcher, MlNetResumeMatcher>();
-//builder.Services.AddScoped<IResumeMatcher, MlNetResumeMatcher>();
+builder.Services.AddScoped<IResumeMatcher, MlNetResumeMatcher>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

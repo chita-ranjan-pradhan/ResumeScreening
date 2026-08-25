@@ -17,7 +17,7 @@ namespace ResumeScreening.Controllers
 
         [HttpPost("analyze")]
         public async Task<IActionResult> Analyze(
-            [FromBody] AnalyzeResumeRequest request)
+            [FromForm] AnalyzeResumeRequest request)
         {
             try
             {
